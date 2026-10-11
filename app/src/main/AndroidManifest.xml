@@ -32,6 +32,10 @@
             android:name=".AppPickerActivity"
             android:exported="false" />
 
+        <activity
+            android:name=".DisclosureActivity"
+            android:exported="false" />
+
         <!-- 차단 화면: 최근 앱 목록에 남지 않고, 다른 앱 위로 뜸 -->
         <activity
             android:name=".BlockActivity"

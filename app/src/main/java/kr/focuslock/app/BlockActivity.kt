@@ -3,10 +3,14 @@ package kr.focuslock.app
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.Gravity
+import android.widget.ScrollView
+import android.window.OnBackInvokedDispatcher
+import kr.focuslock.app.Ui.applySystemBarInsets
 import kr.focuslock.app.Ui.column
 import kr.focuslock.app.Ui.ghost
 import kr.focuslock.app.Ui.input
@@ -20,7 +24,19 @@ class BlockActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Android 13+ (특히 target 36부터는 onBackPressed가 호출되지 않음): 뒤로 가기 = 홈으로
+        if (Build.VERSION.SDK_INT >= 33) {
+            onBackInvokedDispatcher.registerOnBackInvokedCallback(
+                OnBackInvokedDispatcher.PRIORITY_DEFAULT
+            ) { goHome() }
+        }
         build(intent)
+    }
+
+    private fun goHome() {
+        startActivity(Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME)
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+        finish()
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -88,7 +104,12 @@ class BlockActivity : Activity() {
             handler.postDelayed(tick, 1000)
         }
 
-        setContentView(root)
+        setContentView(ScrollView(this).apply {
+            setBackgroundColor(Ui.BG)
+            isFillViewport = true
+            addView(root)
+            applySystemBarInsets()
+        })
     }
 
     override fun onDestroy() {
@@ -98,11 +119,7 @@ class BlockActivity : Activity() {
 
     /** 뒤로 가기로 차단 앱에 돌아가지 못하게 홈으로 보냅니다. */
     @Deprecated("Deprecated in Java")
-    override fun onBackPressed() {
-        startActivity(Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME)
-            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
-        finish()
-    }
+    override fun onBackPressed() = goHome()
 
     companion object {
         const val EXTRA_PKG = "pkg"

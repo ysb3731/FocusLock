@@ -16,6 +16,7 @@ import android.view.WindowManager
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
+import kr.focuslock.app.Ui.applySystemBarInsets
 import kr.focuslock.app.Ui.bigTime
 import kr.focuslock.app.Ui.bg
 import kr.focuslock.app.Ui.chip
@@ -43,7 +44,12 @@ class MainActivity : Activity() {
         selMin = store.lastMinutes
         selStrict = store.lastStrict
         root = column()
-        setContentView(ScrollView(this).apply { setBackgroundColor(Ui.BG); addView(root) })
+        setContentView(ScrollView(this).apply { setBackgroundColor(Ui.BG); addView(root); applySystemBarInsets() })
+
+        // 첫 실행: 접근성 사용 전 사전 고지·동의 화면을 메뉴 없이 바로 보여줌
+        if (savedInstanceState == null && !serviceEnabled() && !DisclosureActivity.seen(this)) {
+            startActivity(Intent(this, DisclosureActivity::class.java))
+        }
 
         if (Build.VERSION.SDK_INT >= 33 &&
             checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
@@ -78,9 +84,9 @@ class MainActivity : Activity() {
                 background = bg(Ui.SURFACE, 14, Ui.ACCENT)
                 setPadding(dp(16), dp(14), dp(16), dp(14))
                 addView(text("앱 차단이 꺼져 있어요", 15f, bold = true))
-                addView(text("설정 › 접근성 › 설치된 앱 › '숨 고르기 앱 차단'을 켜야 고른 앱을 막을 수 있습니다.", 13f, Ui.MUTED))
-                addView(ghost("접근성 설정 열기").apply {
-                    setOnClickListener { startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)) }
+                addView(text("타이머는 지금도 쓸 수 있어요. 고른 앱까지 막으려면 접근성 권한이 필요합니다.", 13f, Ui.MUTED))
+                addView(ghost("앱 차단 켜기 (권한 안내 보기)").apply {
+                    setOnClickListener { startActivity(Intent(this@MainActivity, DisclosureActivity::class.java)) }
                 }, Ui.full().apply { topMargin = dp(10) })
             })
         }

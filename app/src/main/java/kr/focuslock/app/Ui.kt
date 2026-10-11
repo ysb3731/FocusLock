@@ -4,7 +4,10 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
+import android.os.Build
 import android.view.Gravity
+import android.view.View
+import android.view.WindowInsets
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.Button
@@ -100,6 +103,28 @@ object Ui {
         isSingleLine = true
         background = bg(SURFACE, 12, LINE)
         setPadding(dp(14), dp(12), dp(14), dp(12))
+    }
+
+    /**
+     * Android 15+ 는 화면을 상태바·내비게이션바 아래까지 그립니다(edge-to-edge).
+     * 원래 여백에 시스템 바 높이를 더해 글자가 가려지지 않게 합니다.
+     */
+    fun View.applySystemBarInsets() {
+        val l = paddingLeft; val t = paddingTop; val r = paddingRight; val b = paddingBottom
+        setOnApplyWindowInsetsListener { v, insets ->
+            if (Build.VERSION.SDK_INT >= 30) {
+                val s = insets.getInsets(WindowInsets.Type.systemBars() or WindowInsets.Type.ime())
+                v.setPadding(l + s.left, t + s.top, r + s.right, b + s.bottom)
+            } else {
+                @Suppress("DEPRECATION")
+                v.setPadding(
+                    l + insets.systemWindowInsetLeft, t + insets.systemWindowInsetTop,
+                    r + insets.systemWindowInsetRight, b + insets.systemWindowInsetBottom
+                )
+            }
+            insets
+        }
+        requestApplyInsets()
     }
 
     fun full() = LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT)

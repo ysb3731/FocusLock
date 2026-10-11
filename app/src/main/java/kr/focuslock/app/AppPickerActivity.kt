@@ -6,6 +6,7 @@ import android.content.res.ColorStateList
 import android.os.Bundle
 import android.widget.CheckBox
 import android.widget.ScrollView
+import kr.focuslock.app.Ui.applySystemBarInsets
 import kr.focuslock.app.Ui.column
 import kr.focuslock.app.Ui.primary
 import kr.focuslock.app.Ui.text
@@ -45,6 +46,6 @@ class AppPickerActivity : Activity() {
             setOnClickListener { store.blockedPackages = chosen; finish() }
         }, Ui.full())
 
-        setContentView(ScrollView(this).apply { setBackgroundColor(Ui.BG); addView(root) })
+        setContentView(ScrollView(this).apply { setBackgroundColor(Ui.BG); addView(root); applySystemBarInsets() })
     }
 }
