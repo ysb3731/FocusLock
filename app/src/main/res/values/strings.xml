@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">숨 고르기</string>
+    <string name="service_label">숨 고르기 앱 차단</string>
+    <string name="service_desc">집중 시간 동안 내가 고른 앱이 열리면 차단 화면을 띄웁니다. 화면에 보이는 앱 이름(패키지명)만 확인하며, 입력한 내용이나 화면 글자는 읽거나 저장하지 않습니다.</string>
+</resources>
