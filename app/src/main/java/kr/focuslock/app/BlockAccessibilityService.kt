@@ -2,6 +2,8 @@ package kr.focuslock.app
 
 import android.accessibilityservice.AccessibilityService
 import android.content.Intent
+import android.os.Handler
+import android.os.Looper
 import android.view.accessibility.AccessibilityEvent
 
 /**
@@ -33,13 +35,22 @@ class BlockAccessibilityService : AccessibilityService() {
         lastPkg = pkg
         lastAt = now
 
+        // 먼저 홈으로 보내 차단 앱(영상·소리)을 멈추고,
+        // 홈 화면 전환이 끝난 뒤 차단 화면을 띄웁니다.
+        // (동시에 실행하면 홈 화면이 차단 화면을 덮어 버림: S23 실기기에서 확인)
         performGlobalAction(GLOBAL_ACTION_HOME)
-        startActivity(
-            Intent(this, BlockActivity::class.java)
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                .putExtra(BlockActivity.EXTRA_PKG, pkg)
-        )
+        handler.removeCallbacksAndMessages(null)
+        handler.postDelayed({
+            if (!store.isActive()) return@postDelayed
+            startActivity(
+                Intent(this, BlockActivity::class.java)
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                    .putExtra(BlockActivity.EXTRA_PKG, pkg)
+            )
+        }, 450)
     }
+
+    private val handler = Handler(Looper.getMainLooper())
 
     override fun onInterrupt() {}
 }

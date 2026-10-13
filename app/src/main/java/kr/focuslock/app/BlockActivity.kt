@@ -59,7 +59,7 @@ class BlockActivity : Activity() {
 
         val root = column(padding = 28, gap = 18).apply { gravity = Gravity.CENTER }
         root.addView(text(
-            if (appName != null) "${appName}은(는)\n${leftMin}분 뒤에 열려요" else "아직 ${leftMin}분 남았어요",
+            if (appName != null) "${appName}\n${leftMin}분 뒤에 열려요" else "아직 ${leftMin}분 남았어요",
             26f, bold = true
         ).apply { gravity = Gravity.CENTER }, Ui.full())
         root.addView(text("방금 무엇을 하려고 했나요? 적어 두고 나중에 하세요.", 15f, Ui.MUTED).apply {
